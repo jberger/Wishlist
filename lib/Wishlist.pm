@@ -1,10 +1,17 @@
 package Wishlist;
 use Mojo::Base 'Mojolicious';
 
+use File::Share;
 use Mojo::File;
 use Mojo::SQLite;
 use LinkEmbedder;
 use Wishlist::Model;
+
+has dist_dir => sub {
+  return Mojo::File->new(
+    File::Share::dist_dir('Wishlist')
+  );
+};
 
 has sqlite => sub {
   my $app = shift;
@@ -24,7 +31,7 @@ has sqlite => sub {
 
   # attach migrations file
   $sqlite->migrations->from_file(
-    $app->home->child('wishlist.sql')
+    $app->dist_dir->child('wishlist.sql')
   )->name('wishlist');
 
   return $sqlite;
@@ -40,6 +47,10 @@ sub startup {
   if (my $secrets = $app->config->{secrets}) {
     $app->secrets($secrets);
   }
+
+  $app->renderer->paths([
+    $app->dist_dir->child('templates'),
+  ]);
 
   $app->helper(link => sub {
     my $c = shift;
