@@ -7,6 +7,14 @@ use LinkEmbedder;
 sub startup {
   my $app = shift;
 
+  $app->plugin('Config' => {
+    default => {},
+  });
+
+  if (my $secrets = $app->config->{secrets}) {
+    $app->secrets($secrets);
+  }
+
   $app->helper(link => sub {
     my $c = shift;
     state $le = LinkEmbedder->new;
