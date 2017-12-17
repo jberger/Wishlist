@@ -49,52 +49,16 @@ sub startup {
     $c->render($template);
   });
 
-  $r->get('/list/:name' => 'list');
+  $r->get('/list/:name')->to(template => 'list')->name('list');
 
-  $r->get('/add' => sub {
-    my $c = shift;
-    my $link = $c->link($c->param('url'));
-    $c->render('add', link => $link);
-  });
+  $r->get('/add')->to('List#show_add')->name('show_add');
+  $r->post('/add')->to('List#do_add')->name('do_add');
 
-  $r->post('/add' => sub {
-    my $c = shift;
-    my $title = $c->param('title');
-    $c->user->{items}{$title} = {
-      title => $title,
-      url => $c->param('url'),
-      purchased => 0,
-    };
-    $c->redirect_to('/');
-  });
+  $r->post('/update')->to('List#update')->name('update');
+  $r->post('/remove')->to('List#remove')->name('remove');
 
-  $r->post('/update' => sub {
-    my $c = shift;
-    my $user = $c->user($c->param('user'));
-    my $item = $user->{items}{$c->param('title')};
-    $item->{purchased} = $c->param('purchased');
-    $c->redirect_to('list', name => $user->{name});
-  });
-
-  $r->post('/remove' => sub {
-    my $c = shift;
-    delete $c->user->{items}{$c->param('title')};
-    $c->redirect_to('/');
-  });
-
-  $r->post('/login' => sub {
-    my $c = shift;
-    if (my $name = $c->param('name')) {
-      $c->session->{name} = $name;
-    }
-    $c->redirect_to('/');
-  });
-
-  $r->any('/logout' => sub {
-    my $c = shift;
-    $c->session(expires => 1);
-    $c->redirect_to('/');
-  });
+  $r->post('/login')->to('Access#login')->name('login');
+  $r->any('/logout')->to('Access#logout')->name('logout');
 
 }
 

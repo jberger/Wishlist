@@ -17,7 +17,7 @@
       Add this item to your list?
     </div>
     <div class="panel-body">
-      %= form_for 'add' => (method => 'POST') => begin
+      %= form_for 'do_add' => begin
         %= hidden_field title => $link->title
         %= hidden_field url => $link->url
         <input type="submit" value="Yes" class="btn btn-default">
