@@ -4,7 +4,7 @@
   </div>
   <div class="panel-body">
     <ul class="nav nav-pills nav-stacked">
-      % for my $name (sort keys %{ users() }) {
+      % for my $name (sort keys %{ app->users }) {
         %= t li => link_to $name => list => {name => $name}
       % }
     </ul>

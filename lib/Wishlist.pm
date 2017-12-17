@@ -2,7 +2,18 @@ package Wishlist;
 use Mojo::Base 'Mojolicious';
 
 use DBM::Deep;
+use Mojo::File;
 use LinkEmbedder;
+
+has users => sub {
+  my $app = shift;
+  my $file = $app->config->{database} || 'wishlist.db';
+  $file = Mojo::File->new($file);
+  unless ($file->is_abs) {
+    $file = $app->home->child("$file");
+  }
+  return DBM::Deep->new("$file");
+};
 
 sub startup {
   my $app = shift;
@@ -21,15 +32,11 @@ sub startup {
     return $le->get(@_);
   });
 
-  $app->helper(users => sub {
-    state $db = DBM::Deep->new('wishlist.db');
-  });
-
   $app->helper(user => sub {
     my ($c, $name) = @_;
     $name ||= $c->stash->{name} || $c->session->{name};
     return {} unless $name;
-    return $c->users->{$name} ||= {
+    return $c->app->users->{$name} ||= {
       name => $name,
       items => {},
     };
