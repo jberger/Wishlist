@@ -18,20 +18,19 @@
     </td>
   </thead>
   <tbody>
-  % for my $key (sort keys %{ user->{items} }) {
-    % my $item = user->{items}{$key};
+    % for my $item (@{ user->{items} }) {
     <tr>
       %= t td => $item->{title}
       %= t td => link_to $item->{url} => $item->{url}
       % if (session->{name} eq user->{name}) {
         %= t td => form_for 'remove' => begin
-          %= hidden_field title => $key
+          %= hidden_field id => $item->{id}
           <input type="submit" value="Remove" class="btn btn-default">
         % end
       % } else {
         %= t td => form_for 'update' => begin
-          %= hidden_field user  => user->{name}
-          %= hidden_field title => $key
+          %= hidden_field name => user->{name}
+          %= hidden_field id   => $item->{id}
           % if ($item->{purchased}) {
             %= hidden_field purchased => 0
             <input type="submit" value="Mark Not Purchased" class="btn btn-default">

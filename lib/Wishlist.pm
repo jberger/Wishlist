@@ -1,18 +1,33 @@
 package Wishlist;
 use Mojo::Base 'Mojolicious';
 
-use DBM::Deep;
 use Mojo::File;
+use Mojo::SQLite;
 use LinkEmbedder;
+use Wishlist::Model;
 
-has users => sub {
+has sqlite => sub {
   my $app = shift;
+
+  # determine the storage location
   my $file = $app->config->{database} || 'wishlist.db';
-  $file = Mojo::File->new($file);
-  unless ($file->is_abs) {
-    $file = $app->home->child("$file");
+  unless ($file =~ /^:/) {
+    $file = Mojo::File->new($file);
+    unless ($file->is_abs) {
+      $file = $app->home->child("$file");
+    }
   }
-  return DBM::Deep->new("$file");
+
+  my $sqlite = Mojo::SQLite->new
+    ->from_filename("$file")
+    ->auto_migrate(1);
+
+  # attach migrations file
+  $sqlite->migrations->from_file(
+    $app->home->child('wishlist.sql')
+  )->name('wishlist');
+
+  return $sqlite;
 };
 
 sub startup {
@@ -32,14 +47,30 @@ sub startup {
     return $le->get(@_);
   });
 
+  $app->helper(model => sub {
+    my $c = shift;
+    return Wishlist::Model->new(
+      sqlite => $c->app->sqlite,
+    );
+  });
+
   $app->helper(user => sub {
     my ($c, $name) = @_;
     $name ||= $c->stash->{name} || $c->session->{name};
     return {} unless $name;
-    return $c->app->users->{$name} ||= {
-      name => $name,
-      items => {},
-    };
+
+    my $model = $c->model;
+    my $user = $model->user($name);
+    unless ($user) {
+      $model->add_user($name);
+      $user = $model->user($name);
+    }
+    return $user;
+  });
+
+  $app->helper(users => sub {
+    my $c = shift;
+    return $c->model->list_user_names;
   });
 
   my $r = $app->routes;

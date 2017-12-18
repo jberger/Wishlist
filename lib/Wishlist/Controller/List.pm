@@ -9,26 +9,29 @@ sub show_add {
 
 sub do_add {
   my $c = shift;
-  my $title = $c->param('title');
-  $c->user->{items}{$title} = {
-    title => $title,
+  my %item = (
+    title => $c->param('title'),
     url => $c->param('url'),
     purchased => 0,
-  };
+  );
+  $c->model->add_item($c->user, \%item);
   $c->redirect_to('/');
 }
 
 sub update {
   my $c = shift;
-  my $user = $c->user($c->param('user'));
-  my $item = $user->{items}{$c->param('title')};
-  $item->{purchased} = $c->param('purchased');
-  $c->redirect_to('list', name => $user->{name});
+  $c->model->update_item(
+    {id => $c->param('id')},
+    $c->param('purchased')
+  );
+  $c->redirect_to('list', name => $c->param('name'));
 }
 
 sub remove {
   my $c = shift;
-  delete $c->user->{items}{$c->param('title')};
+  $c->model->remove_item(
+    {id => $c->param('id')},
+  );
   $c->redirect_to('/');
 }
 

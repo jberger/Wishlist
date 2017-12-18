@@ -1,4 +1,4 @@
 requires 'Mojolicious';
-requires 'DBM::Deep';
+requires 'Mojo::SQLite';
 requires 'LinkEmbedder';
 
