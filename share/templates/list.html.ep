@@ -22,14 +22,14 @@
     <tr>
       %= t td => $item->{title}
       %= t td => link_to $item->{url} => $item->{url}
-      % if (session->{name} eq user->{name}) {
+      % if (session->{username} eq user->{username}) {
         %= t td => form_for 'remove' => begin
           %= hidden_field id => $item->{id}
           <input type="submit" value="Remove" class="btn btn-default">
         % end
       % } else {
         %= t td => form_for 'update' => begin
-          %= hidden_field name => user->{name}
+          %= hidden_field next_url => $c->req->url
           %= hidden_field id   => $item->{id}
           % if ($item->{purchased}) {
             %= hidden_field purchased => 0

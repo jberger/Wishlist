@@ -3,7 +3,9 @@ PRAGMA foreign_keys = ON;
 
 create table users (
   id integer primary key autoincrement,
-  name text not null unique
+  username text not null unique,
+  name text not null,
+  password text not null
 );
 
 create table items (

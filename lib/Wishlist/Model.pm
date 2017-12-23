@@ -2,26 +2,46 @@ package Wishlist::Model;
 use Mojo::Base -base;
 
 use Carp ();
+use Passwords ();
 
 has sqlite => sub { Carp::croak 'sqlite is required' };
 
 sub add_user {
-  my ($self, $name) = @_;
+  my ($self, $user) = @_;
+  Carp::croak 'password is required'
+    unless $user->{password};
+  $user->{password} = Passwords::password_hash($user->{password});
   return $self
     ->sqlite
     ->db
-    ->insert(
-      'users',
-      {name => $name},
-    )->last_insert_id;
+    ->insert(users => $user)
+    ->last_insert_id;
+}
+
+sub check_password {
+  my ($self, $username, $password) = @_;
+  return undef unless $password;
+  my $user = $self
+    ->sqlite
+    ->db
+    ->select(
+      'users' => ['password'],
+      {username => $username},
+    )->hash;
+  return undef unless $user;
+  return Passwords::password_verify(
+    $password,
+    $user->{password},
+  );
 }
 
 sub user {
-  my ($self, $name) = @_;
+  my ($self, $username) = @_;
   my $sql = <<'  SQL';
     select
       user.id,
       user.name,
+      user.username,
       (
         select
           json_group_array(item)
@@ -37,28 +57,27 @@ sub user {
         )
       ) as items
     from users user
-    where user.name=?
+    where user.username=?
   SQL
   return $self
     ->sqlite
     ->db
-    ->query($sql, $name)
+    ->query($sql, $username)
     ->expand(json => 'items')
     ->hash;
 }
 
-sub list_user_names {
+sub all_users {
   my $self = shift;
   return $self
     ->sqlite
     ->db
     ->select(
-      'users' => ['name'],
+      'users' => [qw/username name/],
       undef,
       {-asc => 'name'},
     )
-    ->arrays
-    ->map(sub{ $_->[0] });
+    ->hashes;
 }
 
 sub add_item {

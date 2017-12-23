@@ -74,32 +74,25 @@ sub startup {
   });
 
   $app->helper(user => sub {
-    my ($c, $name) = @_;
-    $name ||= $c->stash->{name} || $c->session->{name};
-    return {} unless $name;
-
-    my $model = $c->model;
-    my $user = $model->user($name);
-    unless ($user) {
-      $model->add_user($name);
-      $user = $model->user($name);
-    }
-    return $user;
+    my ($c, $username) = @_;
+    $username ||= $c->stash->{username} || $c->session->{username};
+    return {} unless $username;
+    return $c->model->user($username) || {};
   });
 
   $app->helper(users => sub {
     my $c = shift;
-    return $c->model->list_user_names;
+    return $c->model->all_users;
   });
 
   my $r = $app->routes;
   $r->get('/' => sub {
     my $c = shift;
-    my $template = $c->session->{name} ? 'list' : 'login';
+    my $template = $c->session->{username} ? 'list' : 'login';
     $c->render($template);
   });
 
-  $r->get('/list/:name')->to(template => 'list')->name('list');
+  $r->get('/list/:username')->to(template => 'list')->name('list');
 
   $r->get('/add')->to('List#show_add')->name('show_add');
   $r->post('/add')->to('List#do_add')->name('do_add');
@@ -107,6 +100,8 @@ sub startup {
   $r->post('/update')->to('List#update')->name('update');
   $r->post('/remove')->to('List#remove')->name('remove');
 
+  $r->get('/register')->to(template => 'register')->name('show_register');
+  $r->post('/register')->to('Access#register')->name('do_register');
   $r->post('/login')->to('Access#login')->name('login');
   $r->any('/logout')->to('Access#logout')->name('logout');
 

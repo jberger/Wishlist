@@ -24,7 +24,10 @@ sub update {
     {id => $c->param('id')},
     $c->param('purchased')
   );
-  $c->redirect_to('list', name => $c->param('name'));
+  if (my $url = $c->param('next_url')) {
+    return $c->redirect_to($url);
+  }
+  return $c->redirect_to('/');
 }
 
 sub remove {
