@@ -13,6 +13,11 @@ has dist_dir => sub {
   );
 };
 
+has site_name => sub {
+  my $app = shift;
+  return $app->config->{site_name} || 'Mojo Wishlist';
+};
+
 has sqlite => sub {
   my $app = shift;
 
@@ -135,6 +140,7 @@ As L<Wishlist> is just a L<Mojolicious> application, all of the L<Mojolicious::G
 =head2 CONFIGURATION
 
   {
+    site_name => 'Family Wishlist',
     secrets => ['a very secret string'],
     database => '/path/to/database/file.db',
   }
@@ -148,6 +154,12 @@ Alternatively, an absolute path to the configuration file can be given via C<MOJ
 The allowed configuration options are
 
 =over
+
+=item site_name
+
+A string specifying the name of the site.
+Used in the link to the application root.
+Defaults to C<Mojo Wishlist>.
 
 =item secrets
 
