@@ -1,5 +1,5 @@
-*.db
-*.swp
 MANIFEST
 MANIFEST.SKIP.bak
 META.*
+*.db
+*.conf
