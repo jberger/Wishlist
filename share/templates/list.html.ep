@@ -1,4 +1,5 @@
-% title user->{name} . "'s List";
+% my $user = user;
+% title $user->{name} . "'s List";
 % layout 'default';
 
 % content_for 'sidebar' => begin
@@ -18,11 +19,11 @@
     </td>
   </thead>
   <tbody>
-    % for my $item (@{ user->{items} }) {
+    % for my $item (@{ $user->{items} }) {
     <tr>
       %= t td => $item->{title}
       %= t td => link_to $item->{url} => $item->{url}
-      % if (session->{username} eq user->{username}) {
+      % if (session->{username} eq $user->{username}) {
         %= t td => form_for 'remove' => begin
           %= hidden_field id => $item->{id}
           <input type="submit" value="Remove" class="btn btn-default">
@@ -30,7 +31,7 @@
       % } else {
         %= t td => form_for 'update' => begin
           %= hidden_field next_url => $c->req->url
-          %= hidden_field id   => $item->{id}
+          %= hidden_field id => $item->{id}
           % if ($item->{purchased}) {
             %= hidden_field purchased => 0
             <input type="submit" value="Mark Not Purchased" class="btn btn-default">
