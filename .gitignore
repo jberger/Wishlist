@@ -3,3 +3,4 @@ MANIFEST.SKIP.bak
 META.*
 *.db
 *.conf
+README

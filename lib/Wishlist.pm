@@ -7,6 +7,9 @@ use Mojo::SQLite;
 use LinkEmbedder;
 use Wishlist::Model;
 
+our $VERSION = '0.01';
+$VERSION = eval $VERSION;
+
 has dist_dir => sub {
   return Mojo::File->new(
     File::Share::dist_dir('Wishlist')
