@@ -16,7 +16,6 @@ Users can then add the item to their wishlist.
 Other users can then mark the item as purchased.
 
 The application is very raw, lots of feature improvement is possible.
-For now there isn't even user authentication, just open access and self-selected names.
 It was developed as examples from L<several of the posts|https://mojolicious.io/blog/tag/wishlist/> during the L<2017 Mojolicious Advent Calendar|https://mojolicious.io/blog/tag/advent/>.
 I hope that it will continue to improve, with community collaboration, into a fully fledge competitor to cloud solutions that track and mine your data.
 
