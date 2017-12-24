@@ -3,6 +3,7 @@ use Mojo::Base 'Mojolicious';
 
 use File::Share;
 use Mojo::File;
+use Mojo::Home;
 use Mojo::SQLite;
 use LinkEmbedder;
 use Wishlist::Model;
@@ -14,6 +15,11 @@ has dist_dir => sub {
   return Mojo::File->new(
     File::Share::dist_dir('Wishlist')
   );
+};
+
+has home => sub {
+  my $home = $ENV{WISHLIST_HOME};
+  return Mojo::Home->new($home ? $home : ())->to_abs;
 };
 
 has site_name => sub {
@@ -49,6 +55,7 @@ sub startup {
   my $app = shift;
 
   $app->plugin('Config' => {
+    file => $ENV{WISHLIST_CONFIG},
     default => {},
   });
 
@@ -134,6 +141,11 @@ I hope that it will continue to improve, with community collaboration, into a fu
 
 As L<Wishlist> is just a L<Mojolicious> application, all of the L<Mojolicious::Guides::Cookbook/DEPLOYMENT> options are available for deployment.
 
+=head2 APPLICATION HOME
+
+The application home is where L<Wishlist> stores data and looks for configuration.
+It can be set by setting C<WISHLIST_HOME> in your environment, otherwise your current working directory is used.
+
 =head2 CONFIGURATION
 
   {
@@ -144,9 +156,9 @@ As L<Wishlist> is just a L<Mojolicious> application, all of the L<Mojolicious::G
 
 A configuration file is highly recommended.
 Its contents should evaluate to a Perl data structure.
-The easiest usage is to set the environment variable C<MOJO_HOME> to a directory containing the configuration.
-In this case the file should be called C<wishlist.conf> or C<wishlist.$mode.conf> if per-mode configuration is desired.
-Alternatively, an absolute path to the configuration file can be given via C<MOJO_CONFIG>.
+The easiest usage is to create a configuration file in the L</"APPLICATION HOME">.
+The file should be called C<wishlist.conf> or C<wishlist.$mode.conf> if per-mode configuration is desired.
+Alternatively, an absolute path to the configuration file can be given via C<WISHLIST_CONFIG>.
 
 The allowed configuration options are
 
