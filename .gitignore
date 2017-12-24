@@ -1,6 +1,10 @@
 MANIFEST
 MANIFEST.SKIP.bak
 META.*
+MYMETA.*
+Build
+blib/
+_build_params
 *.db
 *.conf
 README
