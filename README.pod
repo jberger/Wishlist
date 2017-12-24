@@ -62,9 +62,7 @@ Learn about how these work at L<https://mojolicious.io/blog/2017/12/16/day-16-th
 
 Path to the file used to store data via L<Mojo::SQLite>.
 If not specified the default value will be C<wishlist.db>.
-Any relative values will be relative to the application's home directory, which can be set by C<MOJO_HOME>.
-If C<MOJO_HOME> is unset, this value should be given and should be absolute.
-Learn more about this at L<https://mojolicious.io/blog/2017/12/19/day-19-make-your-app-installable>.
+Any relative values will be relative to the L</"APPLICATION HOME">.
 
 =item hypnotoad
 
